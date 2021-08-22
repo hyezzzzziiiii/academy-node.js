@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        table { border: 1px solid black; border-collapse: collapse; }
+        table th, table td { border: 1px solid black; }
+    </style>
+</head>
+<body>
+    // 수정
+    <form id="update-form"> 
+        <table align="center">
+            <tr>
+                <td width="150" align="center">번호</td>
+                <td  width="150" align="center">{{board.id}}
+                    <input type="hidden" name="id" value="{{board.id}}" /></td>
+                <td width="150" align="center">작성자</td>
+                <td width="150" align="center">{{board.writer}}
+                    <input type="hidden" name="writer" value="{{board.writer}}" /></td>
+            </tr>
+            <tr>
+                <td width="150" align="center">작성일</td>
+                <td  width="150"  align="center">{{board.created_at | date("YYYY/MM/DD")}}</td>
+                <td align="center">조회수</td>
+                <td align="center">{{board.readCount}}</td>
+            </tr>
+            <tr>
+                <td align="center" width="150">제목</td>
+                <td  width="150"  colspan="3">&nbsp;
+                    <input type="text" name="subject" size="50" value="{{board.subject}}"></td>
+            <tr height="300">
+                <td align="center" width="150">내용</td>
+                <td  width="150"  colspan="3">&nbsp;
+                    <textarea name="text" rows="10" cols="60">{{board.text}}</textarea></td>
+            </tr>
+            <tr>
+                <td align="center" width="150">이미지</td>
+                <td  width="150"  colspan="3">
+                    <input type="file" name="image" id="image">
+                    {% if board.filename %}
+                        <img src="/upload/{{board.realfilename}}" width="100"
+                            height="100" style="vertical-align: middle;"/>
+                        <input type="hidden" id="oldimg" value="{{board.filename}}">
+                        <input type="hidden" id="realoldimg" value="{{board.realfilename}}">
+                        {% endif %}
+                </td>
+            </tr>
+        </table>
+        <center><input type="submit" value="수정" />
+        <input type="button" value="돌아가기" 
+            onClick="location.href='/boards/boardView2/{{board.id}}'"/>
+        </center>
+    </form>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="/update.js"></script>
+</body>
+</html>

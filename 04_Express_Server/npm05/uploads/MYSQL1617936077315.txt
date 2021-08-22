@@ -1,0 +1,143 @@
+- 프로그램 다운로드 :
+https://dev.mysql.com/downloads/installer
+
+- 환경변수 등록 경로 :
+C:\Program Files\MySQL\MySQL Server 8.0\bin
+
+- cmd 창에서 mysql 로 접속
+mysql -h localhost -u root -p
+( -h localhost : 연결 호스트, -u root : 사용자 아이디 , -p : 비밀번호
+
+
+- MySql  에 데이터베이스(scheama) 생성
+create schema `nodejs` default character set utf8;
+
+- 사용할 데이터베이스(스키마)로 이동
+use nodejs;
+
+- 데이블 생성
+    -  사용자 정보를 저장하는 테이블
+create table nodejs.users (
+    id int not null AUTO_INCREMENT,
+    name varchar(20) not null,
+    age int unsigned not null,
+    married tinyint not null,
+    comment text null,
+    created_at datetime not null default now(),
+    primary key(id) 
+);
+
+
+
+- 컬럼의 옵션들
+INT: 정수 자료형(FLOAT, DOUBLE은 실수)
+VARCHAR: 문자열 자료형, 가변 길이(CHAR은 고정 길이)
+TEXT: 긴 문자열은 TEXT로 별도 저장
+DATETIME: 날짜 자료형 저장
+TINYINT: -128에서 127까지 저장하지만 여기서는 1 또는 0만 저장해 불 값 표현
+
+NOT NULL: 빈 값은 받지 않는다는 뜻(NULL은 빈 값 허용)
+AUTO_INCREMENT: 숫자 자료형인 경우 다음 로우가 저장될 때 자동으로 1 증가
+UNSIGNED: 0과 양수만 허용
+ZEROFILL: 숫자의 자리 수가 고정된 경우 빈 자리에 0을 넣음
+DEFAULT now(): 날짜 컬럼의 기본값을 현재 시간으로
+
+
+
+
+- 테이블 생성 또는 내용 확인
+desc users;
+
+- 테이블의 삭제
+drop table users;
+
+
+
+
+- 두번째 테이블 작성
+테이블명 : comments
+
+컬럼
+- id : int, not null, auto_increament
+- commenter : int, not null
+- comment : varchar(100), not null
+- created_at : datetime, not ull, default now()
+- 기본키 : id
+- 외래키지정이름 : commenter_FK
+- 외래키 : users 의 id 를 현재테이블의 commenter  가 참조
+- 부모키 데이터 삭제시 같이 삭제
+- 부모키 데이터 수정시 같이 수정
+
+- 테이블 정보 : 댓글
+- 기본 charset=utf8mb4
+- 엔진 : InnoDB
+
+
+
+CREATE TABLE `nodejs`.`comments` (
+  ` id` INT NOT NULL AUTO_INCREMENT,
+  `commenter` INT NOT NULL,
+  `comment` VARCHAR(100) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT now(),
+  PRIMARY KEY (` id`),
+  INDEX `commenter_FK_idx` (`commenter` ASC) VISIBLE,
+  CONSTRAINT `commenter_FK`
+    FOREIGN KEY (`commenter`)
+    REFERENCES `nodejs`.`users` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE  )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COMMENT = '댓글';
+
+
+- 컬럼의 옵션들 추가
+    - PRIMARY KEY(id)
+        - id가 테이블에서 로우를 특정할 수 있게 해주는 고유한 값임을 의미
+        - 학번, 주민등록번호같은 개념
+
+    - UNIQUE INDEX name_UNIQUE (name ASC)
+        - UNIQUE : 해당 컬럼(name)이 고유해야 함을 나타내는 옵션
+        - name_UNIQUE 는 이 옵션의 이름(아무거나 다른 걸로 지어도 됨)
+        - ASC는 인덱스를 오름차순으로 저장함의 의미(내림차순은 DESC)
+        - 오름차순으로 정렬해두어서 검색 속도를 빠르게 합니다
+        - UNIQUE 를 뺀 INDEX 도 있습니다
+
+    - COMMENT : 테이블에 대한 보충 설명(필수 아님)
+    - DEFAULT CHARSET : utf8로 설정해야 한글이 입력됨(utf8mb4 하면 이모티콘 가능)
+    - ENGINE : InnoDB 사용(이외에 MyISAM이 있음, 엔진별로 기능 차이 존재)
+
+desc 테이블명; - 테이블의 필드와 데이터타입 및 옵션 출력
+show tables;  - 현재 스키마에 저장된 테이블 이름들
+
+- 레코드의 추가
+insert into nodejs.users( name, age, married, comment) values ( '홍길동', 23, 0, '안녕하세요');
+insert into nodejs.users( name, age, married, comment) values ( '홍길서', 32, 1, '반갑습니다');
+
+insert into nodejs.comments( commenter, comment ) values ( 1 , '홍길동의 댓글입니다' );
+
+- 테이블 조회
+select * from nodejs.users;
+select * from nodejs.commnets;
+
+- where 절
+- and , or 의 사용
+select * from nodejs.users where married=1 and age>30;
+select * from nodejs.users where married=0 or age>30;
+- 정렬
+select * from nodejs.users where married=0 or age>30 order by age desc;
+
+- limit 사용 : 조회할 레코드 갯수 지정
+select * from nodejs.users limit 1;  
+- offset 사용 : 조회할 레코드 시작위치 지정 ,  2 을 지정하면 세번째부터
+select * from nodejs.users limit 1 offset 1;
+
+- update
+update nodejs.users set comment='바뀌었습니다' where id = 2;
+
+
+- delete
+delete from nodejs.users where id = 2;
+
+
+
